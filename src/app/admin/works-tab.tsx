@@ -95,6 +95,14 @@ export function WorksTab({
     patch({ gallery });
   };
 
+  const moveCategory = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 1 || j >= categories.length) return; // 「全部」固定在第一位
+    const next = [...categories];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange({ ...works, categories: next });
+  };
+
   const categoryOptions = categories.slice(1);
   const currentCategory = project.category;
   const options =
@@ -173,6 +181,20 @@ export function WorksTab({
                         onChange({ ...works, categories: next });
                       }}
                     />
+                    <div className="flex flex-col gap-1">
+                      <MiniBtn
+                        label="上移"
+                        onClick={() => moveCategory(i, -1)}
+                      >
+                        <ArrowUp className="size-3" />
+                      </MiniBtn>
+                      <MiniBtn
+                        label="下移"
+                        onClick={() => moveCategory(i, 1)}
+                      >
+                        <ArrowDown className="size-3" />
+                      </MiniBtn>
+                    </div>
                     <MiniBtn
                       label="删除分类"
                       danger
@@ -220,6 +242,9 @@ export function WorksTab({
               <Plus className="size-3.5" />
             </Btn>
           </div>
+          <p className="mt-2 text-xs leading-relaxed text-mute">
+            顺序即站点上筛选按钮的排列顺序。
+          </p>
         </Card>
       </div>
 
