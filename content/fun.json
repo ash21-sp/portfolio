@@ -1,0 +1,30 @@
+{
+  "funProjects": [
+    {
+      "title": "像素头像生成器",
+      "description": "输入任意字符串，随机生成一张独一无二的像素风头像。",
+      "tags": [
+        "SVG",
+        "随机算法"
+      ],
+      "logo": "/fun/double-x.svg"
+    },
+    {
+      "title": "赛博许愿池",
+      "description": "把愿望写进粒子动画里，看它慢慢沉底，或者被陌生人捞起来。",
+      "tags": [
+        "Canvas",
+        "交互动画"
+      ],
+      "logo": "/fun/wishpool.svg"
+    },
+    {
+      "title": "AI 灵魂画手",
+      "description": "你说一句画面，AI 替你画成一幅儿童简笔画。",
+      "tags": [
+        "LLM",
+        "Next.js"
+      ]
+    }
+  ]
+}

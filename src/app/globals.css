@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------
+   设计令牌：黑白档案 + 克莱因蓝点缀
+   亮色 = 纸白档案；暗色 = 中性黑胶片，无紫调
+---------------------------------------------------------------- */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-mute: var(--mute);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-contrast: var(--accent-contrast);
+  --font-mono: var(--font-jb-mono), ui-monospace, sfmono-regular, "PingFang SC",
+    "Noto Sans CJK SC", "Hiragino Sans GB", "Microsoft YaHei", monospace;
+}
+
+:root {
+  --paper: #fafaf9;
+  --surface: #ffffff;
+  --ink: #111113;
+  --mute: #6e6e73;
+  --line: rgba(17, 17, 19, 0.1);
+  --grid: rgba(17, 17, 19, 0.05);
+  --dot: rgba(17, 17, 19, 0.14);
+  --accent: #2f52e0;
+  --accent-soft: rgba(47, 82, 224, 0.08);
+  --accent-contrast: #ffffff;
+  --bg-dot: rgba(17, 17, 19, 0.055);
+  --bg-glow: rgba(47, 82, 224, 0.055);
+}
+
+.dark {
+  --paper: #0e0e0f;
+  --surface: #161617;
+  --ink: #f4f4f2;
+  --mute: #9b9ba0;
+  --line: rgba(255, 255, 255, 0.1);
+  --grid: rgba(255, 255, 255, 0.05);
+  --dot: rgba(255, 255, 255, 0.11);
+  --accent: #7a93ff;
+  --accent-soft: rgba(122, 147, 255, 0.1);
+  --accent-contrast: #0e142e;
+  --bg-dot: rgba(255, 255, 255, 0.042);
+  --bg-glow: rgba(122, 147, 255, 0.07);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---- 纹理：点阵（项目卡排版式封面） ---- */
+.dot-grid {
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* ---- 背景：点阵纸面 + 顶部克莱因蓝晕染（fixed 场景层，不随滚动移动） ---- */
+.bg-scene {
+  background-image:
+    radial-gradient(1000px 520px at 82% -12%, var(--bg-glow), transparent 70%),
+    radial-gradient(var(--bg-dot) 1px, transparent 1px);
+  background-size:
+    auto,
+    22px 22px;
+}
+
+/* ---- 链接下划线：克莱因蓝渐显 ---- */
+.u-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
+}
+.u-link:hover {
+  text-decoration-color: var(--accent);
+}
+
+/* ---- 轮换标语光标 ---- */
+.cursor-blink {
+  animation: cursor-blink 1.1s steps(1) infinite;
+}
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.tag-fade {
+  animation: tag-fade 0.45s ease-out;
+}
+@keyframes tag-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* ---- 作品网格：切换分类时的轻量淡入 ---- */
+.grid-in {
+  animation: grid-in 0.35s ease-out;
+}
+@keyframes grid-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* ---- 滚动显现 ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

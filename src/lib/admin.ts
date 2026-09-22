@@ -1,0 +1,210 @@
+/* ================================================================
+   本地后台的服务端工具：dev-only 守卫、内容读写、校验、图片清理
+   后台 API 只在本地开发模式（npm run admin）下可用，
+   生产构建里所有 /api/admin/* 一律 404，不会部署到线上。
+   ================================================================ */
+
+import fs from "node:fs/promises";
+import path from "node:path";
+import { NextResponse } from "next/server";
+import type { FunData, ProfileData, WorksData } from "@/config/site";
+
+export type AdminSection = "profile" | "works" | "fun";
+
+/** 生产环境一律 404；返回 null 表示放行 */
+export function ensureLocalAdmin(): NextResponse | null {
+  if (process.env.NODE_ENV !== "development") {
+    return NextResponse.json(
+      { error: "后台只能在本地使用：在项目目录运行 npm run admin" },
+      { status: 404 },
+    );
+  }
+  return null;
+}
+
+const CONTENT_DIR = path.join(process.cwd(), "content");
+const PUBLIC_DIR = path.join(process.cwd(), "public");
+
+const SECTION_FILES = {
+  profile: "profile.json",
+  works: "works.json",
+  fun: "fun.json",
+} as const satisfies Record<AdminSection, string>;
+
+export async function readSection<T>(section: AdminSection): Promise<T> {
+  const raw = await fs.readFile(
+    path.join(CONTENT_DIR, SECTION_FILES[section]),
+    "utf8",
+  );
+  return JSON.parse(raw) as T;
+}
+
+export async function writeSection(
+  section: AdminSection,
+  data: unknown,
+): Promise<void> {
+  const file = path.join(CONTENT_DIR, SECTION_FILES[section]);
+  await fs.writeFile(file, JSON.stringify(data, null, 2) + "\n", "utf8");
+}
+
+/* ---------------- 校验 ---------------- */
+
+const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
+// slug 会成为 /works/<slug> 路由，避开站点已有路径
+const RESERVED_SLUGS = new Set(["works", "fun", "admin", "api"]);
+
+const isStr = (v: unknown): v is string => typeof v === "string";
+const isStrArray = (v: unknown): v is string[] =>
+  Array.isArray(v) && v.every(isStr);
+
+export function validateProfile(p: ProfileData): string[] {
+  const errors: string[] = [];
+  const need = (cond: boolean, msg: string) => {
+    if (!cond) errors.push(msg);
+  };
+  need(isStr(p.name) && !!p.name.trim(), "名字不能为空");
+  need(isStr(p.logo) && !!p.logo.trim(), "页眉字符标不能为空");
+  need(isStr(p.avatar) && p.avatar.startsWith("/"), "头像路径需要以 / 开头");
+  need(isStr(p.role) && !!p.role.trim(), "头衔不能为空");
+  need(isStr(p.company), "公司/身份需要为文本");
+  need(isStr(p.location), "地点需要为文本");
+  need(isStr(p.locationUrl), "地图链接需要为文本");
+  need(isStr(p.email) && !!p.email.trim(), "邮箱不能为空");
+  need(isStrArray(p.taglines), "轮换标语需要是文本列表");
+  need(isStr(p.description), "SEO 描述需要为文本");
+  need(isStr(p.intro), "开场白需要为文本");
+  if (!Array.isArray(p.bio)) {
+    errors.push("简介段落格式不正确");
+  } else {
+    p.bio.forEach((para, i) => {
+      if (!Array.isArray(para)) {
+        errors.push(`简介第 ${i + 1} 段格式不正确`);
+        return;
+      }
+      para.forEach((seg, j) => {
+        if (!seg || !isStr(seg.text)) {
+          errors.push(`简介第 ${i + 1} 段第 ${j + 1} 个片段需要是文本`);
+        } else if (seg.href !== undefined && !isStr(seg.href)) {
+          errors.push(`简介第 ${i + 1} 段第 ${j + 1} 个片段的链接需要是文本`);
+        }
+      });
+    });
+  }
+  need(isStr(p.icp), "备案号需要为文本");
+  need(isStr(p.footerNote), "页脚注记需要为文本");
+  return errors;
+}
+
+export function validateWorks(w: WorksData): string[] {
+  const errors: string[] = [];
+  if (!isStrArray(w.categories) || w.categories.length === 0) {
+    return ["至少需要保留一个作品分类"];
+  }
+  const seen = new Set<string>();
+  (Array.isArray(w.projects) ? w.projects : []).forEach((proj, i) => {
+    const label = isStr(proj?.title) && proj.title.trim() ? proj.title : `第 ${i + 1} 个作品`;
+    if (!isStr(proj.slug) || !SLUG_RE.test(proj.slug)) {
+      errors.push(`「${label}」的 slug 只能用小写字母、数字、短横线（如 maxintel）`);
+    } else if (RESERVED_SLUGS.has(proj.slug)) {
+      errors.push(`「${label}」的 slug 不能占用保留名：${proj.slug}`);
+    } else if (seen.has(proj.slug)) {
+      errors.push(`slug「${proj.slug}」重复了，每个作品需要唯一的 slug`);
+    }
+    seen.add(proj.slug);
+    if (!isStr(proj.title) || !proj.title.trim()) errors.push(`第 ${i + 1} 个作品缺少标题`);
+    if (!isStr(proj.subtitle)) errors.push(`「${label}」缺少副标题`);
+    if (!isStr(proj.category) || !proj.category.trim()) errors.push(`「${label}」还没有选择分类`);
+    if (!isStr(proj.year) || !proj.year.trim()) errors.push(`「${label}」缺少年份`);
+    if (!isStrArray(proj.description)) errors.push(`「${label}」的描述需要是多段文本`);
+    if (proj.role !== undefined && !isStr(proj.role)) errors.push(`「${label}」的角色需要是文本`);
+    if (proj.cover !== undefined && !(isStr(proj.cover) && proj.cover.startsWith("/"))) {
+      errors.push(`「${label}」的封面路径需要以 / 开头`);
+    }
+    if (proj.gallery !== undefined && !isStrArray(proj.gallery)) {
+      errors.push(`「${label}」的图集格式不正确`);
+    }
+    if (proj.link !== undefined && !isStr(proj.link)) errors.push(`「${label}」的外链需要是文本`);
+  });
+  return errors;
+}
+
+export function validateFun(f: FunData): string[] {
+  const errors: string[] = [];
+  if (!Array.isArray(f.funProjects)) return ["好玩的条目格式不正确"];
+  f.funProjects.forEach((item, i) => {
+    const label = isStr(item?.title) && item.title.trim() ? item.title : `第 ${i + 1} 条`;
+    if (!isStr(item.title) || !item.title.trim()) errors.push(`「${label}」缺少标题`);
+    if (!isStr(item.description)) errors.push(`「${label}」缺少描述`);
+    if (!isStrArray(item.tags)) errors.push(`「${label}」的标签需要是文本列表`);
+    if (item.logo !== undefined && !isStr(item.logo)) errors.push(`「${label}」的 logo 路径需要是文本`);
+    if (item.url !== undefined && !isStr(item.url)) errors.push(`「${label}」的演示地址需要是文本`);
+  });
+  return errors;
+}
+
+/* ---------------- 不再引用的图片清理 ---------------- */
+
+/** 收集三份数据里引用到的、位于 public 下的资源路径 */
+function collectAssetRefs(data: {
+  profile: ProfileData;
+  works: WorksData;
+  fun: FunData;
+}): Set<string> {
+  const refs = new Set<string>();
+  const add = (p: unknown) => {
+    if (isStr(p) && p.startsWith("/")) refs.add(p);
+  };
+  add(data.profile?.avatar);
+  (data.works?.projects ?? []).forEach((p) => {
+    add(p.cover);
+    (p.gallery ?? []).forEach(add);
+  });
+  (data.fun?.funProjects ?? []).forEach((f) => add(f.logo));
+  return refs;
+}
+
+/**
+ * 保存后清理「之前被引用、现在不再被引用」的后台上传图片。
+ * 只删 /works/ 与 /fun/ 下、文件名由后台上传规则生成的文件；
+ * /tools、/social、avatar 等手工维护的资源一律不动。
+ */
+export async function cleanupOrphanAssets(
+  oldData: { profile: ProfileData; works: WorksData; fun: FunData },
+  newData: { profile: ProfileData; works: WorksData; fun: FunData },
+): Promise<string[]> {
+  const oldRefs = collectAssetRefs(oldData);
+  const newRefs = collectAssetRefs(newData);
+  const removed: string[] = [];
+  for (const ref of oldRefs) {
+    if (newRefs.has(ref)) continue;
+    if (!ref.startsWith("/works/") && !ref.startsWith("/fun/")) continue;
+    if (ref.includes("..") || !/^\/[\w./-]+$/.test(ref)) continue;
+    try {
+      await fs.unlink(path.join(PUBLIC_DIR, ref));
+      removed.push(ref);
+    } catch {
+      // 文件本来就不存在等情况，忽略
+    }
+  }
+  return removed;
+}
+
+/** 后台上传文件命名：时间戳 + 清洗后的原名，杜绝路径注入 */
+export function uploadFileName(originalName: string): { stem: string; ext: string } | null {
+  const ext = path.extname(originalName).toLowerCase();
+  if (![".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".avif"].includes(ext)) return null;
+  const stem =
+    path
+      .basename(originalName, path.extname(originalName))
+      .toLowerCase()
+      .replace(/[^a-z0-9-_]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 40) || "img";
+  return { stem, ext };
+}
+
+export function timestamp(): string {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+}
