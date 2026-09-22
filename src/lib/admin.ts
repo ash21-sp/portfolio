@@ -139,6 +139,9 @@ export function validateWorks(w: WorksData): string[] {
       errors.push(`「${label}」的图集格式不正确`);
     }
     if (proj.link !== undefined && !isStr(proj.link)) errors.push(`「${label}」的外链需要是文本`);
+    if (proj.featured !== undefined && typeof proj.featured !== "boolean") {
+      errors.push(`「${label}」的首页精选标记格式不正确`);
+    }
   });
   return errors;
 }

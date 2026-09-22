@@ -8,7 +8,9 @@ import { ToolsWall } from "@/components/tools-wall";
 import { site } from "@/config/site";
 
 export default function HomePage() {
-  const featured = site.projects.slice(0, 4);
+  // 首页精选：优先展示后台勾选的作品；一个都没勾时回退为排序前 4 个
+  const picked = site.projects.filter((p) => p.featured);
+  const featured = picked.length > 0 ? picked : site.projects.slice(0, 4);
 
   return (
     <PageShell>

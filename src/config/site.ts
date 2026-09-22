@@ -60,6 +60,8 @@ export interface Project {
   gallery?: string[];
   /** 外链（可选）；填写后卡片直接跳外链而不是站内详情页 */
   link?: string;
+  /** 首页「精选作品」展示标记；一个都没选时首页默认取排序前 4 个 */
+  featured?: boolean;
 }
 
 export interface FunProject {

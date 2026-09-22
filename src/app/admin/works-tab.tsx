@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowDown, ArrowUp, ImagePlus, Plus, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ImagePlus, Plus, Star, X } from "lucide-react";
 import type { Project, WorksData } from "@/config/site";
 import {
   Btn,
@@ -129,7 +129,15 @@ export function WorksTab({
                       : "border-line hover:border-mute"
                   }`}
                 >
-                  <span className="block truncate text-sm">{p.title}</span>
+                  <span className="block truncate text-sm">
+                    {p.featured && (
+                      <Star
+                        className="mr-1 inline size-3.5 fill-accent text-accent"
+                        aria-label="首页精选"
+                      />
+                    )}
+                    {p.title}
+                  </span>
                   <span className="block truncate font-mono text-[11px] text-mute">
                     /works/{p.slug || "?"}
                   </span>
@@ -312,6 +320,24 @@ export function WorksTab({
                   onChange={(e) => patch({ link: e.target.value.trim() })}
                 />
               </Field>
+              <div className="sm:col-span-2">
+                <span className="font-mono text-[11px] uppercase tracking-widest text-mute">
+                  首页精选
+                </span>
+                <label className="mt-1.5 flex w-fit cursor-pointer select-none items-center gap-2.5 rounded-md border border-line bg-paper px-3 py-2.5 text-sm">
+                  <input
+                    type="checkbox"
+                    className="size-4 accent-accent"
+                    checked={!!project.featured}
+                    onChange={(e) => patch({ featured: e.target.checked })}
+                  />
+                  在首页「精选作品」中展示这件作品
+                </label>
+                <p className="mt-1 text-xs leading-relaxed text-mute">
+                  已选 {projects.filter((p) => p.featured).length} 件 · 建议选 4
+                  件（首页按两列排列）；一件都没选时默认展示排序最前的 4 件
+                </p>
+              </div>
             </div>
           </Card>
 

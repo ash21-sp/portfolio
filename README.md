@@ -32,7 +32,7 @@ npm run admin        # 启动本地后台（3210 端口）
 | `public/works/`、`public/fun/`、`public/social/`、`public/tools/` | 后台上传的封面、图集、图标 |
 | `src/config/site.ts` | 类型定义 + 内容加载器 |
 
-页面全部从 `src/config/site.ts` 导出的 `site` 对象取数，一般不用动代码。首页「精选作品」展示 `projects` 前 4 个，在后台里把想展示的作品排到最前面即可。
+页面全部从 `src/config/site.ts` 导出的 `site` 对象取数，一般不用动代码。首页「精选作品」展示在后台勾选了「首页精选」的作品（建议 4 件，两列排列）；一件都没勾时默认展示排序最前的 4 件。
 
 ## 首次部署（只需做一次）
 
