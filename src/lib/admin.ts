@@ -142,8 +142,11 @@ export function validateWorks(w: WorksData): string[] {
     if (proj.featured !== undefined && typeof proj.featured !== "boolean") {
       errors.push(`「${label}」的首页精选标记格式不正确`);
     }
-    if (proj.showCoverInDetail !== undefined && typeof proj.showCoverInDetail !== "boolean") {
-      errors.push(`「${label}」的封面展示开关格式不正确`);
+    for (const key of ["showCoverInDetail", "showDescriptionInDetail", "seamlessGallery"] as const) {
+      if (proj[key] !== undefined && typeof proj[key] !== "boolean") {
+        errors.push(`「${label}」的展示开关格式不正确`);
+        break;
+      }
     }
   });
   return errors;

@@ -97,26 +97,43 @@ export default async function ProjectPage({ params }: Props) {
           </Reveal>
         )}
 
-        <Reveal>
-          <div className="mt-12 space-y-4 text-[15px] leading-[1.85]">
-            {project.description.map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-          </div>
-        </Reveal>
+        {project.showDescriptionInDetail !== false &&
+          project.description.length > 0 && (
+            <Reveal>
+              <div className="mt-12 space-y-4 text-[15px] leading-[1.85]">
+                {project.description.map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
+            </Reveal>
+          )}
 
         {project.gallery && project.gallery.length > 0 && (
-          <div className="mt-12 space-y-6">
-            {project.gallery.map((img) => (
-              <Reveal key={img}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={img}
-                  alt={`${project.title} 配图`}
-                  className="w-full rounded-lg border border-line"
-                />
+          <div className={project.seamlessGallery ? "mt-12" : "mt-12 space-y-6"}>
+            {project.seamlessGallery ? (
+              <Reveal>
+                {project.gallery.map((img) => (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    key={img}
+                    src={img}
+                    alt={`${project.title} 配图`}
+                    className="w-full"
+                  />
+                ))}
               </Reveal>
-            ))}
+            ) : (
+              project.gallery.map((img) => (
+                <Reveal key={img}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={img}
+                    alt={`${project.title} 配图`}
+                    className="w-full rounded-lg border border-line"
+                  />
+                </Reveal>
+              ))
+            )}
           </div>
         )}
 

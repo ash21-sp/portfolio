@@ -412,23 +412,40 @@ export function WorksTab({
                 </div>
               </Field>
             </div>
-            {project.cover && (
-              <label className="mt-4 flex w-fit cursor-pointer select-none items-center gap-2.5 rounded-md border border-line bg-paper px-3 py-2.5 text-sm">
-                <input
-                  type="checkbox"
-                  className="size-4 accent-accent"
-                  checked={project.showCoverInDetail !== false}
-                  onChange={(e) =>
-                    patch({ showCoverInDetail: e.target.checked })
-                  }
-                />
-                封面同时展示在作品详情页
-              </label>
-            )}
-            {project.cover && (
-              <p className="mt-1.5 text-xs leading-relaxed text-mute">
-                不勾选时，封面只用于作品列表的卡片，详情页直接从描述和图集开始
-              </p>
+            {(project.cover || (project.gallery ?? []).length > 0) && (
+              <div className="mt-4 space-y-2.5">
+                {project.cover && (
+                  <label className="flex w-fit cursor-pointer select-none items-center gap-2.5 rounded-md border border-line bg-paper px-3 py-2.5 text-sm">
+                    <input
+                      type="checkbox"
+                      className="size-4 accent-accent"
+                      checked={project.showCoverInDetail !== false}
+                      onChange={(e) =>
+                        patch({ showCoverInDetail: e.target.checked })
+                      }
+                    />
+                    封面同时展示在作品详情页
+                  </label>
+                )}
+                {(project.gallery ?? []).length > 0 && (
+                  <label className="flex w-fit cursor-pointer select-none items-center gap-2.5 rounded-md border border-line bg-paper px-3 py-2.5 text-sm">
+                    <input
+                      type="checkbox"
+                      className="size-4 accent-accent"
+                      checked={!!project.seamlessGallery}
+                      onChange={(e) =>
+                        patch({ seamlessGallery: e.target.checked })
+                      }
+                    />
+                    详情图无缝衔接（上下紧贴、无圆角边框，适合整页视觉案例）
+                  </label>
+                )}
+                {project.cover && (
+                  <p className="text-xs leading-relaxed text-mute">
+                    不勾选「封面同时展示」时，封面只用于作品列表卡片；想让封面也参与无缝拼接，可关闭它并把封面作为图集第一张上传
+                  </p>
+                )}
+              </div>
             )}
           </Card>
 
@@ -450,6 +467,20 @@ export function WorksTab({
                 }
               />
             </Field>
+            <label className="mt-3 flex w-fit cursor-pointer select-none items-center gap-2.5 rounded-md border border-line bg-paper px-3 py-2.5 text-sm">
+              <input
+                type="checkbox"
+                className="size-4 accent-accent"
+                checked={project.showDescriptionInDetail !== false}
+                onChange={(e) =>
+                  patch({ showDescriptionInDetail: e.target.checked })
+                }
+              />
+              在详情页展示这段文字
+            </label>
+            <p className="mt-1.5 text-xs leading-relaxed text-mute">
+              不勾选时详情页只展示图片（标题等页面信息保留），适合纯视觉案例
+            </p>
           </Card>
         </div>
       ) : (

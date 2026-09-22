@@ -64,6 +64,10 @@ export interface Project {
   featured?: boolean;
   /** 封面是否同时展示在详情页；默认展示，设为 false 时封面只用于列表卡片 */
   showCoverInDetail?: boolean;
+  /** 详情页是否展示描述文字；默认展示，纯视觉案例可关闭 */
+  showDescriptionInDetail?: boolean;
+  /** 详情图集是否无缝衔接（上下紧贴、无圆角边框）；默认不衔接 */
+  seamlessGallery?: boolean;
 }
 
 export interface FunProject {
