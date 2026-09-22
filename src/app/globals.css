@@ -82,6 +82,12 @@
       transition-duration: 0.01ms !important;
     }
   }
+
+  /* ---- 作品防盗：禁止图片拖拽/选中（右键另存在 ProtectImages 中拦截） ---- */
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
+  }
 }
 
 /* ---- 纹理：点阵（项目卡排版式封面） ---- */

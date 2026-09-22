@@ -1,4 +1,5 @@
 import { BackToTopClient } from "@/components/back-to-top";
+import { ProtectImages } from "@/components/protect-images";
 import { SiteChrome } from "@/components/site-chrome";
 import { SiteFooter } from "@/components/site-footer";
 
@@ -23,6 +24,7 @@ export function PageShell({ children }: { children: React.ReactNode }) {
           <SiteFooter />
         </main>
         <BackToTopClient />
+        <ProtectImages />
       </div>
     </div>
   );

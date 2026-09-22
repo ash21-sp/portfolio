@@ -25,6 +25,46 @@ function emptyProject(categories: string[], year: number): Project {
   };
 }
 
+function WatermarkCard() {
+  const [busy, setBusy] = useState(false);
+  const run = async () => {
+    if (
+      !window.confirm(
+        "给全部作品的封面和图集图片补烧浅色水印？\n注意：已加过水印的图片会再叠加一层（更明显），一般只需执行一次。",
+      )
+    ) {
+      return;
+    }
+    setBusy(true);
+    try {
+      const res = await fetch("/api/admin/watermark", { method: "POST" });
+      const json = (await res.json()) as {
+        processed?: number;
+        skipped?: number;
+        error?: string;
+      };
+      if (!res.ok) throw new Error(json.error ?? "执行失败");
+      window.alert(
+        `完成：处理 ${json.processed ?? 0} 张，跳过 ${json.skipped ?? 0} 张（SVG 和小图会自动跳过）。记得点右上角「发布上线」同步到线上。`,
+      );
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : "执行失败");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <Card title="图片保护">
+      <p className="text-xs leading-relaxed text-mute">
+        新上传的作品图会自动烧入浅色平铺水印；之前上传的图片可一次性补上。
+      </p>
+      <Btn className="mt-2 w-full" onClick={run} disabled={busy}>
+        {busy ? "处理中…" : "为全部作品图补加水印"}
+      </Btn>
+    </Card>
+  );
+}
+
 export function WorksTab({
   works,
   onChange,
@@ -254,6 +294,8 @@ export function WorksTab({
             顺序即站点上筛选按钮的排列顺序。
           </p>
         </Card>
+
+        <WatermarkCard />
       </div>
 
       {/* 右栏：选中作品的编辑表单 */}

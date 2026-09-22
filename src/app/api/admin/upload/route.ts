@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { NextResponse, type NextRequest } from "next/server";
 import { ensureLocalAdmin, timestamp, uploadFileName } from "@/lib/admin";
+import { watermarkFile } from "@/lib/watermark";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -62,18 +63,26 @@ export async function POST(req: NextRequest) {
 
   try {
     let publicPath: string;
+    let diskPath: string;
     if (target === "avatar") {
       const name = `avatar${named.ext}`;
-      await fs.writeFile(path.join(process.cwd(), "public", name), bytes);
+      diskPath = path.join(process.cwd(), "public", name);
+      await fs.writeFile(diskPath, bytes);
       publicPath = `/${name}`;
     } else {
       const dir = path.join(process.cwd(), "public", TARGET_DIRS[target]);
       await fs.mkdir(dir, { recursive: true });
       const name = `${timestamp()}-${named.stem}${named.ext}`;
-      await fs.writeFile(path.join(dir, name), bytes);
+      diskPath = path.join(dir, name);
+      await fs.writeFile(diskPath, bytes);
       publicPath = `/${TARGET_DIRS[target]}/${name}`;
     }
-    return NextResponse.json({ ok: true, path: publicPath });
+    // 作品图烧入防盗水印（头像/图标不做）
+    let watermarked = false;
+    if (target === "work") {
+      watermarked = await watermarkFile(diskPath);
+    }
+    return NextResponse.json({ ok: true, path: publicPath, watermarked });
   } catch (err) {
     return NextResponse.json(
       { error: `保存图片失败：${err instanceof Error ? err.message : String(err)}` },
