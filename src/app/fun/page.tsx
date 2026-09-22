@@ -13,12 +13,16 @@ export default function FunPage() {
   return (
     <PageShell>
       <section className="pb-10 pt-2 lg:pt-4">
-        <h1 className="text-[32px] font-bold tracking-tight md:text-[40px]">
-          一些好玩的<span className="text-accent">.</span>
-        </h1>
-        <p className="mt-4 max-w-[50ch] text-[15px] leading-[1.85] text-mute">
-          这里是我和 AI 一起胡搞的 vibe coding 实验——想法来了就动手，写出来好玩比写得好重要。
-        </p>
+        <Reveal>
+          <h1 className="text-[32px] font-bold tracking-tight md:text-[40px]">
+            一些好玩的<span className="text-accent">.</span>
+          </h1>
+        </Reveal>
+        <Reveal delay={150}>
+          <p className="mt-4 max-w-[50ch] text-[15px] leading-[1.85] text-mute">
+            这里是我和 AI 一起胡搞的 vibe coding 实验——想法来了就动手，写出来好玩比写得好重要。
+          </p>
+        </Reveal>
       </section>
 
       <ul>

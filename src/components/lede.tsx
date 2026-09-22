@@ -3,7 +3,7 @@ import { site } from "@/config/site";
 import { CopyEmail } from "@/components/copy-email";
 import { Reveal } from "@/components/reveal";
 
-/** 首页开场：大字问候 + 一句介绍 + meta 行 */
+/** 首页开场：大字问候 → 介绍 → meta 行，依次浮现 */
 export function Lede() {
   return (
     <section className="pb-2 pt-2 lg:pt-4">
@@ -11,9 +11,13 @@ export function Lede() {
         <p className="text-[28px] font-bold leading-snug tracking-tight md:text-[36px]">
           你好，我是 <span className="text-accent">{site.name}</span>。
         </p>
+      </Reveal>
+      <Reveal delay={150}>
         <p className="mt-4 max-w-[54ch] text-[15px] leading-[1.85] text-mute">
           {site.intro}
         </p>
+      </Reveal>
+      <Reveal delay={300}>
         <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-[13px] text-mute">
           <span className="flex items-center gap-2">
             <Briefcase className="size-4 text-mute" aria-hidden />

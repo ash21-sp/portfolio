@@ -5,9 +5,12 @@ import { useEffect, useRef } from "react";
 export function Reveal({
   children,
   className,
+  delay = 0,
 }: {
   children: React.ReactNode;
   className?: string;
+  /** 过渡延迟（毫秒），用于同一屏内元素依次浮现 */
+  delay?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -28,7 +31,11 @@ export function Reveal({
   }, []);
 
   return (
-    <div ref={ref} className={`reveal ${className ?? ""}`}>
+    <div
+      ref={ref}
+      className={`reveal ${className ?? ""}`}
+      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
+    >
       {children}
     </div>
   );
