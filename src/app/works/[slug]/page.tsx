@@ -89,11 +89,13 @@ export default async function ProjectPage({ params }: Props) {
           </dl>
         </section>
 
-        <Reveal>
-          <div className="group block">
-            <ProjectCover project={project} index={index} />
-          </div>
-        </Reveal>
+        {project.showCoverInDetail !== false && (
+          <Reveal>
+            <div className="group block">
+              <ProjectCover project={project} index={index} />
+            </div>
+          </Reveal>
+        )}
 
         <Reveal>
           <div className="mt-12 space-y-4 text-[15px] leading-[1.85]">

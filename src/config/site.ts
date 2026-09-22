@@ -62,6 +62,8 @@ export interface Project {
   link?: string;
   /** 首页「精选作品」展示标记；一个都没选时首页默认取排序前 4 个 */
   featured?: boolean;
+  /** 封面是否同时展示在详情页；默认展示，设为 false 时封面只用于列表卡片 */
+  showCoverInDetail?: boolean;
 }
 
 export interface FunProject {

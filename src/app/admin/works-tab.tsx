@@ -412,6 +412,24 @@ export function WorksTab({
                 </div>
               </Field>
             </div>
+            {project.cover && (
+              <label className="mt-4 flex w-fit cursor-pointer select-none items-center gap-2.5 rounded-md border border-line bg-paper px-3 py-2.5 text-sm">
+                <input
+                  type="checkbox"
+                  className="size-4 accent-accent"
+                  checked={project.showCoverInDetail !== false}
+                  onChange={(e) =>
+                    patch({ showCoverInDetail: e.target.checked })
+                  }
+                />
+                封面同时展示在作品详情页
+              </label>
+            )}
+            {project.cover && (
+              <p className="mt-1.5 text-xs leading-relaxed text-mute">
+                不勾选时，封面只用于作品列表的卡片，详情页直接从描述和图集开始
+              </p>
+            )}
           </Card>
 
           <Card title="详情页描述">
