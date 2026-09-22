@@ -6,14 +6,16 @@
      content/works.json    —— 作品分类与作品
      content/fun.json      —— “好玩的”条目
      content/socials.json  —— 社交链接
+     content/tools.json    —— 工具清单
    平时不需要改这个文件：运行 npm run admin 打开本地后台编辑，
-   点「发布」自动提交并上线。工具清单不常改，仍在本文件维护。
+   点「发布」自动提交并上线。
    ================================================================ */
 
 import profileData from "../../content/profile.json";
 import worksData from "../../content/works.json";
 import funData from "../../content/fun.json";
 import socialsData from "../../content/socials.json";
+import toolsData from "../../content/tools.json";
 
 export interface BioSegment {
   text: string;
@@ -111,28 +113,28 @@ export interface SocialsData {
   socials: SocialLink[];
 }
 
+/** content/tools.json 的结构 */
+export interface ToolsData {
+  /** 工具清单；img 是 public 下图标路径 */
+  tools: Tool[];
+}
+
 const profile = profileData as ProfileData;
 const works = worksData as WorksData;
 const fun = funData as FunData;
 const socials = socialsData as unknown as SocialsData;
+const tools = toolsData as ToolsData;
 
 export const site = {
   ...profile,
 
-  // ---- 工具清单（不常改；图标放 public/tools/，img 填路径） ----
-  tools: [
-    { name: "Figma", img: "/tools/figma.png" },
-    { name: "Codex", img: "/tools/codex.png" },
-    { name: "Zcode", img: "/tools/zcode.png" },
-    { name: "Photoshop", img: "/tools/photoshop.png" },
-    { name: "Illustrator", img: "/tools/illustrator.png" },
-    { name: "Eagle", img: "/tools/eagle.png" },
-  ] as Tool[],
+  // ---- 工具清单（已迁移到 content/tools.json，见下方加载） ----
 
   projectCategories: works.categories,
   projects: works.projects,
   funProjects: fun.funProjects,
   socials: socials.socials,
+  tools: tools.tools,
 };
 
 export type Site = typeof site;

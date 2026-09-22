@@ -3,20 +3,28 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ExternalLink, Rocket, Save, X } from "lucide-react";
-import type { FunData, ProfileData, SocialsData, WorksData } from "@/config/site";
+import type {
+  FunData,
+  ProfileData,
+  SocialsData,
+  ToolsData,
+  WorksData,
+} from "@/config/site";
 import { Btn } from "./ui";
 import { WorksTab } from "./works-tab";
 import { ProfileTab } from "./profile-tab";
 import { FunTab } from "./fun-tab";
 import { SocialsTab } from "./socials-tab";
+import { ToolsTab } from "./tools-tab";
 
 type Data = {
   profile: ProfileData;
   works: WorksData;
   fun: FunData;
   socials: SocialsData;
+  tools: ToolsData;
 };
-type Tab = "works" | "profile" | "fun" | "socials";
+type Tab = "works" | "profile" | "fun" | "socials" | "tools";
 type Section = keyof Data;
 
 type PublishResult = {
@@ -37,6 +45,7 @@ const TABS: { key: Tab; label: string; section: Section }[] = [
   { key: "profile", label: "首页与简介", section: "profile" },
   { key: "fun", label: "好玩的", section: "fun" },
   { key: "socials", label: "社交链接", section: "socials" },
+  { key: "tools", label: "工具清单", section: "tools" },
 ];
 
 export default function AdminPage() {
@@ -72,7 +81,7 @@ export default function AdminPage() {
   const dirtySections = useCallback((current: Data | null): Set<Section> => {
     const dirty = new Set<Section>();
     if (!current || !savedRef.current) return dirty;
-    for (const s of ["profile", "works", "fun", "socials"] as const) {
+    for (const s of ["profile", "works", "fun", "socials", "tools"] as const) {
       if (JSON.stringify(current[s]) !== JSON.stringify(savedRef.current[s])) {
         dirty.add(s);
       }
@@ -275,6 +284,12 @@ export default function AdminPage() {
           <SocialsTab
             socials={data.socials}
             onChange={(socials) => setData({ ...data, socials })}
+          />
+        )}
+        {tab === "tools" && (
+          <ToolsTab
+            tools={data.tools}
+            onChange={(tools) => setData({ ...data, tools })}
           />
         )}
 

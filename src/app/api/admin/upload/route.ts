@@ -12,14 +12,15 @@ const TARGET_DIRS = {
   work: "works",
   fun: "fun",
   social: "social",
+  tool: "tools",
 } as const;
 
 type Target = keyof typeof TARGET_DIRS | "avatar";
 
 /**
  * 上传图片（base64）。
- * work/fun/social → public/works|fun|social/<时间戳>-<原名>.<ext>，返回公开路径；
- * avatar          → 固定写入 public/avatar.<ext> 并返回该路径。
+ * work/fun/social/tool → public/works|fun|social|tools/<时间戳>-<原名>.<ext>，返回公开路径；
+ * avatar               → 固定写入 public/avatar.<ext> 并返回该路径。
  */
 export async function POST(req: NextRequest) {
   const denied = ensureLocalAdmin();
@@ -32,8 +33,9 @@ export async function POST(req: NextRequest) {
   } | null;
 
   const target = body?.target;
+  const validTargets = ["work", "fun", "social", "tool", "avatar"] as const;
   if (
-    (target !== "work" && target !== "fun" && target !== "social" && target !== "avatar") ||
+    !target || !validTargets.includes(target) ||
     typeof body?.filename !== "string" ||
     typeof body?.dataBase64 !== "string"
   ) {

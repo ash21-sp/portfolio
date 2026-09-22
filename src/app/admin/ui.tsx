@@ -126,7 +126,7 @@ export function Card({
 
 export async function uploadImage(
   file: File,
-  target: "work" | "fun" | "social" | "avatar",
+  target: "work" | "fun" | "social" | "tool" | "avatar",
 ): Promise<string> {
   if (file.size > 10 * 1024 * 1024) throw new Error("图片不能超过 10MB");
   const dataBase64 = await new Promise<string>((resolve, reject) => {
@@ -159,7 +159,7 @@ export function ImageField({
 }: {
   label: string;
   value?: string;
-  target: "work" | "fun" | "social" | "avatar";
+  target: "work" | "fun" | "social" | "tool" | "avatar";
   onChange: (path: string | undefined) => void;
   hint?: string;
   removable?: boolean;

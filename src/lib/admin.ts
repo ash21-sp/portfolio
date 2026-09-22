@@ -7,9 +7,16 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
-import type { FunData, ProfileData, SocialsData, WorksData } from "@/config/site";
+import type {
+  FunData,
+  ProfileData,
+  SocialsData,
+  Tool,
+  ToolsData,
+  WorksData,
+} from "@/config/site";
 
-export type AdminSection = "profile" | "works" | "fun" | "socials";
+export type AdminSection = "profile" | "works" | "fun" | "socials" | "tools";
 
 /** 生产环境一律 404；返回 null 表示放行 */
 export function ensureLocalAdmin(): NextResponse | null {
@@ -30,6 +37,7 @@ const SECTION_FILES = {
   works: "works.json",
   fun: "fun.json",
   socials: "socials.json",
+  tools: "tools.json",
 } as const satisfies Record<AdminSection, string>;
 
 export async function readSection<T>(section: AdminSection): Promise<T> {
@@ -166,14 +174,28 @@ export function validateSocials(s: SocialsData): string[] {
   return errors;
 }
 
+export function validateTools(t: ToolsData): string[] {
+  const errors: string[] = [];
+  if (!Array.isArray(t.tools)) return ["工具清单格式不正确"];
+  t.tools.forEach((item, i) => {
+    const label = isStr(item?.name) && item.name.trim() ? item.name : `第 ${i + 1} 个工具`;
+    if (!isStr(item.name) || !item.name.trim()) errors.push(`「${label}」缺少工具名`);
+    if (!isStr(item.img) || !item.img.startsWith("/")) {
+      errors.push(`「${label}」还没有上传图标`);
+    }
+  });
+  return errors;
+}
+
 /* ---------------- 不再引用的图片清理 ---------------- */
 
-/** 收集四份数据里引用到的、位于 public 下的资源路径 */
+/** 收集各份数据里引用到的、位于 public 下的资源路径 */
 function collectAssetRefs(data: {
   profile: ProfileData;
   works: WorksData;
   fun: FunData;
   socials: SocialsData;
+  tools: ToolsData;
 }): Set<string> {
   const refs = new Set<string>();
   const add = (p: unknown) => {
@@ -186,24 +208,37 @@ function collectAssetRefs(data: {
   });
   (data.fun?.funProjects ?? []).forEach((f) => add(f.logo));
   (data.socials?.socials ?? []).forEach((s) => add(s.logo));
+  (data.tools?.tools ?? []).forEach((t: Tool) => add(t.img));
   return refs;
 }
 
 /**
  * 保存后清理「之前被引用、现在不再被引用」的后台上传图片。
- * 只删 /works/、/fun/、/social/ 下、文件名由后台上传规则生成的文件；
- * /tools、avatar 等手工维护的资源一律不动。
+ * 只删 /works/、/fun/、/social/、/tools/ 下、文件名由后台上传规则生成的文件；
+ * avatar 等手工维护的资源一律不动。
  */
 export async function cleanupOrphanAssets(
-  oldData: { profile: ProfileData; works: WorksData; fun: FunData; socials: SocialsData },
-  newData: { profile: ProfileData; works: WorksData; fun: FunData; socials: SocialsData },
+  oldData: {
+    profile: ProfileData;
+    works: WorksData;
+    fun: FunData;
+    socials: SocialsData;
+    tools: ToolsData;
+  },
+  newData: {
+    profile: ProfileData;
+    works: WorksData;
+    fun: FunData;
+    socials: SocialsData;
+    tools: ToolsData;
+  },
 ): Promise<string[]> {
   const oldRefs = collectAssetRefs(oldData);
   const newRefs = collectAssetRefs(newData);
   const removed: string[] = [];
   for (const ref of oldRefs) {
     if (newRefs.has(ref)) continue;
-    if (!/^\/(works|fun|social)\//.test(ref)) continue;
+    if (!/^\/(works|fun|social|tools)\//.test(ref)) continue;
     if (ref.includes("..") || !/^\/[\w./-]+$/.test(ref)) continue;
     try {
       await fs.unlink(path.join(PUBLIC_DIR, ref));

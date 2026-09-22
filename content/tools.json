@@ -1,0 +1,28 @@
+{
+  "tools": [
+    {
+      "name": "Figma",
+      "img": "/tools/figma.png"
+    },
+    {
+      "name": "Codex",
+      "img": "/tools/codex.png"
+    },
+    {
+      "name": "Zcode",
+      "img": "/tools/zcode.png"
+    },
+    {
+      "name": "Photoshop",
+      "img": "/tools/photoshop.png"
+    },
+    {
+      "name": "Illustrator",
+      "img": "/tools/illustrator.png"
+    },
+    {
+      "name": "Eagle",
+      "img": "/tools/eagle.png"
+    }
+  ]
+}
