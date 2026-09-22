@@ -13,10 +13,7 @@
       "category": "Web",
       "year": "2025",
       "role": "UI设计师",
-      "description": [
-        "为一家新中式茶饮品牌设计全套视觉：标识、杯贴包装、门店物料与线上点单界面。",
-        "视觉以山水雾色为基底，辅以现代版式与克制的字体层级，让传统意象落在日常的一只杯子上。"
-      ],
+      "description": [],
       "cover": "/works/20260922-212133-304.jpg",
       "gallery": [
         "/works/20260922-224027-304.jpg",
@@ -25,7 +22,9 @@
         "/works/20260922-224113-307.jpg",
         "/works/20260922-224118-308.jpg",
         "/works/20260922-224127-309.jpg"
-      ]
+      ],
+      "featured": true,
+      "showCoverInDetail": false
     },
     {
       "slug": "maxintel",
