@@ -3,14 +3,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ExternalLink, Rocket, Save, X } from "lucide-react";
-import type { FunData, ProfileData, WorksData } from "@/config/site";
+import type { FunData, ProfileData, SocialsData, WorksData } from "@/config/site";
 import { Btn } from "./ui";
 import { WorksTab } from "./works-tab";
 import { ProfileTab } from "./profile-tab";
 import { FunTab } from "./fun-tab";
+import { SocialsTab } from "./socials-tab";
 
-type Data = { profile: ProfileData; works: WorksData; fun: FunData };
-type Tab = "works" | "profile" | "fun";
+type Data = {
+  profile: ProfileData;
+  works: WorksData;
+  fun: FunData;
+  socials: SocialsData;
+};
+type Tab = "works" | "profile" | "fun" | "socials";
 type Section = keyof Data;
 
 type PublishResult = {
@@ -30,6 +36,7 @@ const TABS: { key: Tab; label: string; section: Section }[] = [
   { key: "works", label: "作品", section: "works" },
   { key: "profile", label: "首页与简介", section: "profile" },
   { key: "fun", label: "好玩的", section: "fun" },
+  { key: "socials", label: "社交链接", section: "socials" },
 ];
 
 export default function AdminPage() {
@@ -65,7 +72,7 @@ export default function AdminPage() {
   const dirtySections = useCallback((current: Data | null): Set<Section> => {
     const dirty = new Set<Section>();
     if (!current || !savedRef.current) return dirty;
-    for (const s of ["profile", "works", "fun"] as const) {
+    for (const s of ["profile", "works", "fun", "socials"] as const) {
       if (JSON.stringify(current[s]) !== JSON.stringify(savedRef.current[s])) {
         dirty.add(s);
       }
@@ -263,6 +270,12 @@ export default function AdminPage() {
         )}
         {tab === "fun" && (
           <FunTab fun={data.fun} onChange={(fun) => setData({ ...data, fun })} />
+        )}
+        {tab === "socials" && (
+          <SocialsTab
+            socials={data.socials}
+            onChange={(socials) => setData({ ...data, socials })}
+          />
         )}
 
         <p className="mt-10 text-center font-mono text-[11px] text-mute">

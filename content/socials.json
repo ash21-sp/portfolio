@@ -1,0 +1,47 @@
+{
+  "socials": [
+    {
+      "name": "X",
+      "handle": "@linyizhou",
+      "url": "https://x.com/",
+      "logo": "/social/x.svg",
+      "tile": {
+        "bg": "#111113",
+        "fg": "#FFFFFF",
+        "text": "𝕏"
+      }
+    },
+    {
+      "name": "小红书",
+      "handle": "@一舟设计日记",
+      "url": "https://xhslink.cn/o/A3yCFnyVIyB",
+      "logo": "/social/xiaohongshu.svg",
+      "tile": {
+        "bg": "#FF2442",
+        "fg": "#FFFFFF",
+        "text": "书"
+      }
+    },
+    {
+      "name": "GitHub",
+      "handle": "@linyizhou",
+      "url": "https://github.com/",
+      "tile": {
+        "bg": "#181717",
+        "fg": "#FFFFFF",
+        "icon": "github"
+      }
+    },
+    {
+      "name": "抖音",
+      "handle": "@ALin",
+      "url": "https://www.douyin.com/",
+      "logo": "/social/douyin.svg",
+      "tile": {
+        "bg": "#161823",
+        "fg": "#25F4EE",
+        "text": "抖"
+      }
+    }
+  ]
+}

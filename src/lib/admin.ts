@@ -7,9 +7,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
-import type { FunData, ProfileData, WorksData } from "@/config/site";
+import type { FunData, ProfileData, SocialsData, WorksData } from "@/config/site";
 
-export type AdminSection = "profile" | "works" | "fun";
+export type AdminSection = "profile" | "works" | "fun" | "socials";
 
 /** 生产环境一律 404；返回 null 表示放行 */
 export function ensureLocalAdmin(): NextResponse | null {
@@ -29,6 +29,7 @@ const SECTION_FILES = {
   profile: "profile.json",
   works: "works.json",
   fun: "fun.json",
+  socials: "socials.json",
 } as const satisfies Record<AdminSection, string>;
 
 export async function readSection<T>(section: AdminSection): Promise<T> {
@@ -142,13 +143,37 @@ export function validateFun(f: FunData): string[] {
   return errors;
 }
 
+export function validateSocials(s: SocialsData): string[] {
+  const errors: string[] = [];
+  if (!Array.isArray(s.socials)) return ["社交链接格式不正确"];
+  s.socials.forEach((item, i) => {
+    const label = isStr(item?.name) && item.name.trim() ? item.name : `第 ${i + 1} 个链接`;
+    if (!isStr(item.name) || !item.name.trim()) errors.push(`「${label}」缺少平台名（如 小红书）`);
+    if (!isStr(item.handle)) errors.push(`「${label}」缺少账号名`);
+    if (!isStr(item.url) || !item.url.trim()) {
+      errors.push(`「${label}」缺少跳转链接`);
+    } else if (!/^(https?:\/\/|\/)/.test(item.url.trim())) {
+      errors.push(`「${label}」的跳转链接要以 http(s):// 开头`);
+    }
+    if (item.logo !== undefined && !isStr(item.logo)) errors.push(`「${label}」的图标路径需要是文本`);
+    if (item.tile !== undefined && item.tile !== null) {
+      const t = item.tile as Record<string, unknown>;
+      if (!isStr(t.bg) || !isStr(t.fg)) errors.push(`「${label}」的图标瓦片需要底色和字色`);
+      if (t.icon !== undefined && !isStr(t.icon)) errors.push(`「${label}」的瓦片图标需要是文本`);
+      if (t.text !== undefined && !isStr(t.text)) errors.push(`「${label}」的瓦片文字需要是文本`);
+    }
+  });
+  return errors;
+}
+
 /* ---------------- 不再引用的图片清理 ---------------- */
 
-/** 收集三份数据里引用到的、位于 public 下的资源路径 */
+/** 收集四份数据里引用到的、位于 public 下的资源路径 */
 function collectAssetRefs(data: {
   profile: ProfileData;
   works: WorksData;
   fun: FunData;
+  socials: SocialsData;
 }): Set<string> {
   const refs = new Set<string>();
   const add = (p: unknown) => {
@@ -160,24 +185,25 @@ function collectAssetRefs(data: {
     (p.gallery ?? []).forEach(add);
   });
   (data.fun?.funProjects ?? []).forEach((f) => add(f.logo));
+  (data.socials?.socials ?? []).forEach((s) => add(s.logo));
   return refs;
 }
 
 /**
  * 保存后清理「之前被引用、现在不再被引用」的后台上传图片。
- * 只删 /works/ 与 /fun/ 下、文件名由后台上传规则生成的文件；
- * /tools、/social、avatar 等手工维护的资源一律不动。
+ * 只删 /works/、/fun/、/social/ 下、文件名由后台上传规则生成的文件；
+ * /tools、avatar 等手工维护的资源一律不动。
  */
 export async function cleanupOrphanAssets(
-  oldData: { profile: ProfileData; works: WorksData; fun: FunData },
-  newData: { profile: ProfileData; works: WorksData; fun: FunData },
+  oldData: { profile: ProfileData; works: WorksData; fun: FunData; socials: SocialsData },
+  newData: { profile: ProfileData; works: WorksData; fun: FunData; socials: SocialsData },
 ): Promise<string[]> {
   const oldRefs = collectAssetRefs(oldData);
   const newRefs = collectAssetRefs(newData);
   const removed: string[] = [];
   for (const ref of oldRefs) {
     if (newRefs.has(ref)) continue;
-    if (!ref.startsWith("/works/") && !ref.startsWith("/fun/")) continue;
+    if (!/^\/(works|fun|social)\//.test(ref)) continue;
     if (ref.includes("..") || !/^\/[\w./-]+$/.test(ref)) continue;
     try {
       await fs.unlink(path.join(PUBLIC_DIR, ref));

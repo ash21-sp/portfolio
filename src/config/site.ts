@@ -5,13 +5,15 @@
      content/profile.json  —— 基本信息、简介文案（含头像）
      content/works.json    —— 作品分类与作品
      content/fun.json      —— “好玩的”条目
+     content/socials.json  —— 社交链接
    平时不需要改这个文件：运行 npm run admin 打开本地后台编辑，
-   点「发布」自动提交并上线。社交链接和工具清单不常改，仍在本文件维护。
+   点「发布」自动提交并上线。工具清单不常改，仍在本文件维护。
    ================================================================ */
 
 import profileData from "../../content/profile.json";
 import worksData from "../../content/works.json";
 import funData from "../../content/fun.json";
+import socialsData from "../../content/socials.json";
 
 export interface BioSegment {
   text: string;
@@ -103,43 +105,19 @@ export interface FunData {
   funProjects: FunProject[];
 }
 
+/** content/socials.json 的结构 */
+export interface SocialsData {
+  /** 社交链接；tile 是无 logo 图标时的字母/图标瓦片 */
+  socials: SocialLink[];
+}
+
 const profile = profileData as ProfileData;
 const works = worksData as WorksData;
 const fun = funData as FunData;
+const socials = socialsData as unknown as SocialsData;
 
 export const site = {
   ...profile,
-
-  // ---- 社交链接（不常改，直接维护在这里；tile 是平台图标瓦片的底色/字色） ----
-  socials: [
-    {
-      name: "X",
-      handle: "@linyizhou",
-      url: "https://x.com/",
-      logo: "/social/x.svg",
-      tile: { bg: "#111113", fg: "#FFFFFF", text: "𝕏" },
-    },
-    {
-      name: "小红书",
-      handle: "@一舟设计日记",
-      url: "https://www.xiaohongshu.com/",
-      logo: "/social/xiaohongshu.svg",
-      tile: { bg: "#FF2442", fg: "#FFFFFF", text: "书" },
-    },
-    {
-      name: "GitHub",
-      handle: "@linyizhou",
-      url: "https://github.com/",
-      tile: { bg: "#181717", fg: "#FFFFFF", icon: "github" as const },
-    },
-    {
-      name: "抖音",
-      handle: "@ALin",
-      url: "https://www.douyin.com/",
-      logo: "/social/douyin.svg",
-      tile: { bg: "#161823", fg: "#25F4EE", text: "抖" },
-    },
-  ] as SocialLink[],
 
   // ---- 工具清单（不常改；图标放 public/tools/，img 填路径） ----
   tools: [
@@ -154,6 +132,7 @@ export const site = {
   projectCategories: works.categories,
   projects: works.projects,
   funProjects: fun.funProjects,
+  socials: socials.socials,
 };
 
 export type Site = typeof site;

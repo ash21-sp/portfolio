@@ -1,11 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
-import type { FunData, ProfileData, WorksData } from "@/config/site";
+import type {
+  FunData,
+  ProfileData,
+  SocialsData,
+  WorksData,
+} from "@/config/site";
 import {
   cleanupOrphanAssets,
   ensureLocalAdmin,
   readSection,
   validateFun,
   validateProfile,
+  validateSocials,
   validateWorks,
   writeSection,
 } from "@/lib/admin";
@@ -13,19 +19,25 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type AllContent = { profile: ProfileData; works: WorksData; fun: FunData };
+type AllContent = {
+  profile: ProfileData;
+  works: WorksData;
+  fun: FunData;
+  socials: SocialsData;
+};
 
 /** 读取全部后台内容 */
 export async function GET() {
   const denied = ensureLocalAdmin();
   if (denied) return denied;
   try {
-    const [profile, works, fun] = await Promise.all([
+    const [profile, works, fun, socials] = await Promise.all([
       readSection<ProfileData>("profile"),
       readSection<WorksData>("works"),
       readSection<FunData>("fun"),
+      readSection<SocialsData>("socials"),
     ]);
-    return NextResponse.json({ profile, works, fun });
+    return NextResponse.json({ profile, works, fun, socials });
   } catch (err) {
     return NextResponse.json(
       { error: `读取内容失败：${err instanceof Error ? err.message : String(err)}` },
@@ -48,6 +60,7 @@ export async function PUT(req: NextRequest) {
     ...validateProfile(body.profile),
     ...validateWorks(body.works),
     ...validateFun(body.fun),
+    ...validateSocials(body.socials),
   ];
   if (errors.length > 0) {
     return NextResponse.json({ errors }, { status: 422 });
@@ -58,10 +71,12 @@ export async function PUT(req: NextRequest) {
       profile: await readSection("profile"),
       works: await readSection("works"),
       fun: await readSection("fun"),
+      socials: await readSection("socials"),
     };
     await writeSection("profile", body.profile);
     await writeSection("works", body.works);
     await writeSection("fun", body.fun);
+    await writeSection("socials", body.socials);
     const removedAssets = await cleanupOrphanAssets(oldData, body);
     return NextResponse.json({ ok: true, removedAssets });
   } catch (err) {

@@ -14,7 +14,7 @@ npm run admin        # 启动本地后台（3210 端口）
 
 打开 <http://localhost:3210/admin>：
 
-1. 在「作品 / 首页与简介 / 好玩的」三个标签页里编辑、传图；
+1. 在「作品 / 首页与简介 / 好玩的 / 社交链接」四个标签页里编辑、传图；
 2. 点 **保存** —— 写入本地内容文件，预览（<http://localhost:3210/>）立即生效；
 3. 点 **发布上线** —— 自动提交并推送到 GitHub，Vercel 约 1–2 分钟后自动构建上线。
 
@@ -27,8 +27,9 @@ npm run admin        # 启动本地后台（3210 端口）
 | `content/profile.json` | 名字、头像、头衔、简介文案、页脚等 |
 | `content/works.json` | 作品分类 + 全部作品 |
 | `content/fun.json` | 「好玩的」条目 |
-| `public/works/`、`public/fun/` | 后台上传的封面、图集、logo |
-| `src/config/site.ts` | 类型定义 + 加载器；社交链接和工具清单（不常改）也在这里 |
+| `content/socials.json` | 社交链接（平台名、账号、跳转网址、图标） |
+| `public/works/`、`public/fun/`、`public/social/` | 后台上传的封面、图集、logo、社交图标 |
+| `src/config/site.ts` | 类型定义 + 加载器；工具清单（不常改）也在这里 |
 
 页面全部从 `src/config/site.ts` 导出的 `site` 对象取数，一般不用动代码。首页「精选作品」展示 `projects` 前 4 个，在后台里把想展示的作品排到最前面即可。
 
@@ -90,10 +91,11 @@ npm run start       # 运行生产构建
 ## 目录结构
 
 ```
-content/               # ★ 网站内容（后台读写的就是这三个文件）
+content/               # ★ 网站内容（后台读写的就是这四个文件）
 ├── profile.json       #   基本信息、简介文案
 ├── works.json         #   作品分类与作品
-└── fun.json           #   「好玩的」条目
+├── fun.json           #   「好玩的」条目
+└── socials.json       #   社交链接
 src/
 ├── app/               # 路由：/（首页）、/works、/works/[slug]、/fun、/admin（仅本地）
 │   ├── admin/         #   本地后台界面
