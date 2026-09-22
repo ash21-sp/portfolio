@@ -9,7 +9,10 @@ import path from "node:path";
 import { NextResponse } from "next/server";
 import type {
   FunData,
+  FunProject,
   ProfileData,
+  Project,
+  SocialLink,
   SocialsData,
   Tool,
   ToolsData,
@@ -67,6 +70,7 @@ const isStrArray = (v: unknown): v is string[] =>
   Array.isArray(v) && v.every(isStr);
 
 export function validateProfile(p: ProfileData): string[] {
+  if (!p) return ["基本信息数据缺失"];
   const errors: string[] = [];
   const need = (cond: boolean, msg: string) => {
     if (!cond) errors.push(msg);
@@ -105,12 +109,14 @@ export function validateProfile(p: ProfileData): string[] {
 }
 
 export function validateWorks(w: WorksData): string[] {
+  if (!w) return ["作品数据缺失"];
   const errors: string[] = [];
   if (!isStrArray(w.categories) || w.categories.length === 0) {
     return ["至少需要保留一个作品分类"];
   }
   const seen = new Set<string>();
-  (Array.isArray(w.projects) ? w.projects : []).forEach((proj, i) => {
+  (Array.isArray(w.projects) ? w.projects : []).forEach((raw, i) => {
+    const proj = (raw ?? {}) as Project;
     const label = isStr(proj?.title) && proj.title.trim() ? proj.title : `第 ${i + 1} 个作品`;
     if (!isStr(proj.slug) || !SLUG_RE.test(proj.slug)) {
       errors.push(`「${label}」的 slug 只能用小写字母、数字、短横线（如 maxintel）`);
@@ -138,9 +144,11 @@ export function validateWorks(w: WorksData): string[] {
 }
 
 export function validateFun(f: FunData): string[] {
+  if (!f) return ["好玩的条目数据缺失"];
   const errors: string[] = [];
   if (!Array.isArray(f.funProjects)) return ["好玩的条目格式不正确"];
-  f.funProjects.forEach((item, i) => {
+  f.funProjects.forEach((raw, i) => {
+    const item = (raw ?? {}) as FunProject;
     const label = isStr(item?.title) && item.title.trim() ? item.title : `第 ${i + 1} 条`;
     if (!isStr(item.title) || !item.title.trim()) errors.push(`「${label}」缺少标题`);
     if (!isStr(item.description)) errors.push(`「${label}」缺少描述`);
@@ -152,9 +160,11 @@ export function validateFun(f: FunData): string[] {
 }
 
 export function validateSocials(s: SocialsData): string[] {
+  if (!s) return ["社交链接数据缺失"];
   const errors: string[] = [];
   if (!Array.isArray(s.socials)) return ["社交链接格式不正确"];
-  s.socials.forEach((item, i) => {
+  s.socials.forEach((raw, i) => {
+    const item = (raw ?? {}) as SocialLink;
     const label = isStr(item?.name) && item.name.trim() ? item.name : `第 ${i + 1} 个链接`;
     if (!isStr(item.name) || !item.name.trim()) errors.push(`「${label}」缺少平台名（如 小红书）`);
     if (!isStr(item.handle)) errors.push(`「${label}」缺少账号名`);
@@ -175,9 +185,11 @@ export function validateSocials(s: SocialsData): string[] {
 }
 
 export function validateTools(t: ToolsData): string[] {
+  if (!t) return ["工具清单数据缺失"];
   const errors: string[] = [];
   if (!Array.isArray(t.tools)) return ["工具清单格式不正确"];
-  t.tools.forEach((item, i) => {
+  t.tools.forEach((raw, i) => {
+    const item = (raw ?? {}) as Tool;
     const label = isStr(item?.name) && item.name.trim() ? item.name : `第 ${i + 1} 个工具`;
     if (!isStr(item.name) || !item.name.trim()) errors.push(`「${label}」缺少工具名`);
     if (!isStr(item.img) || !item.img.startsWith("/")) {

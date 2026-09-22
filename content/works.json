@@ -1,16 +1,16 @@
 {
   "categories": [
     "全部",
-    "UI",
-    "品牌",
-    "实验"
+    "企业官网",
+    "移动端",
+    "Web"
   ],
   "projects": [
     {
       "slug": "shangtujiang",
       "title": "商图匠",
       "subtitle": "新中式茶饮品牌视觉",
-      "category": "品牌",
+      "category": "Web",
       "year": "2025",
       "role": "品牌视觉设计",
       "description": [
@@ -23,7 +23,7 @@
       "slug": "maxintel",
       "title": "MaxIntel 极智",
       "subtitle": "GEO 智能营销平台 · UI 改版与新模块",
-      "category": "UI",
+      "category": "Web",
       "year": "2026",
       "role": "UI/UX 设计 · 设计系统",
       "cover": "/works/maxintel.jpg",

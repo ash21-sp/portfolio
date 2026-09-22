@@ -55,36 +55,46 @@ export async function PUT(req: NextRequest) {
   const denied = ensureLocalAdmin();
   if (denied) return denied;
 
-  const body = (await req.json().catch(() => null)) as AllContent | null;
+  const body = (await req.json().catch(() => null)) as Partial<AllContent> | null;
   if (!body || typeof body !== "object") {
     return NextResponse.json({ error: "请求格式不正确" }, { status: 400 });
   }
 
-  const errors = [
-    ...validateProfile(body.profile),
-    ...validateWorks(body.works),
-    ...validateFun(body.fun),
-    ...validateSocials(body.socials),
-    ...validateTools(body.tools),
-  ];
-  if (errors.length > 0) {
-    return NextResponse.json({ errors }, { status: 422 });
-  }
-
   try {
-    const oldData: AllContent = {
+    // 先读磁盘上的当前值：请求里缺哪个板块就沿用哪个，
+    // 这样旧标签页（没有新板块字段）的保存不会崩、也不会误清别的内容
+    const current: AllContent = {
       profile: await readSection("profile"),
       works: await readSection("works"),
       fun: await readSection("fun"),
       socials: await readSection("socials"),
       tools: await readSection("tools"),
     };
-    await writeSection("profile", body.profile);
-    await writeSection("works", body.works);
-    await writeSection("fun", body.fun);
-    await writeSection("socials", body.socials);
-    await writeSection("tools", body.tools);
-    const removedAssets = await cleanupOrphanAssets(oldData, body);
+    const next: AllContent = {
+      profile: body.profile ?? current.profile,
+      works: body.works ?? current.works,
+      fun: body.fun ?? current.fun,
+      socials: body.socials ?? current.socials,
+      tools: body.tools ?? current.tools,
+    };
+
+    const errors = [
+      ...validateProfile(next.profile),
+      ...validateWorks(next.works),
+      ...validateFun(next.fun),
+      ...validateSocials(next.socials),
+      ...validateTools(next.tools),
+    ];
+    if (errors.length > 0) {
+      return NextResponse.json({ errors }, { status: 422 });
+    }
+
+    await writeSection("profile", next.profile);
+    await writeSection("works", next.works);
+    await writeSection("fun", next.fun);
+    await writeSection("socials", next.socials);
+    await writeSection("tools", next.tools);
+    const removedAssets = await cleanupOrphanAssets(current, next);
     return NextResponse.json({ ok: true, removedAssets });
   } catch (err) {
     return NextResponse.json(
