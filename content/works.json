@@ -24,7 +24,8 @@
         "/works/20260922-224127-309.jpg"
       ],
       "featured": true,
-      "showCoverInDetail": false
+      "showCoverInDetail": false,
+      "seamlessGallery": true
     },
     {
       "slug": "maxintel",
