@@ -1,40 +1,39 @@
 #!/bin/bash
-# 双击启动个人官网的本地后台；关闭本窗口即停止后台
+# 双击 = 确保后台在运行并打开管理页面。
+# 服务器由 macOS launchd 守护：崩溃自动重启、开机自动启动，本窗口关不关都无所谓。
+LABEL="com.alin.portfolio-admin"
+PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 cd "$(dirname "$0")" || exit 1
 
-# 先清掉可能在占 3210 端口的残留进程（旧服务器卡死/损坏时也能正常启动）
-PIDS=$(lsof -ti :3210 2>/dev/null)
-if [ -n "$PIDS" ]; then
-  echo "检测到残留的后台进程，正在关闭…"
-  kill $PIDS 2>/dev/null
-  sleep 1
-fi
+# 重新装载守护项（改过配置/清过缓存后也能生效）
+launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null
+sleep 1
+launchctl bootstrap "gui/$(id -u)" "$PLIST" 2>/dev/null || launchctl load -w "$PLIST" 2>/dev/null
 
-start_server() {
-  npm run admin &
-  SERVER_PID=$!
-  # 等服务就绪（最多 45 秒）
-  for _ in $(seq 1 45); do
-    if curl -s -o /dev/null --max-time 2 http://localhost:3210/admin; then
-      return 0
-    fi
-    sleep 1
-  done
-  return 1
-}
-
-if ! start_server; then
-  # 起不来通常是编译缓存损坏：清掉缓存再试一次
-  echo "启动失败，正在清理编译缓存后重试…"
-  kill $SERVER_PID 2>/dev/null
-  rm -rf .next
-  if ! start_server; then
-    echo "重试后仍失败，请截图本窗口内容联系我。"
-    exit 1
+echo "正在启动后台（首次编译约需十几秒）…"
+for _ in $(seq 1 60); do
+  if curl -s -o /dev/null --max-time 2 http://localhost:3210/admin; then
+    open "http://localhost:3210/admin"
+    echo "✓ 后台已就绪。它由 macOS 守护，崩溃会自动重启，本窗口可以直接关闭。"
+    exit 0
   fi
-fi
+  sleep 1
+done
 
-open "http://localhost:3210/admin"
-echo "后台已启动（关闭本窗口即停止）。"
-# 前台挂着显示运行日志
-wait $SERVER_PID
+# 60 秒还没就绪 → 大概率编译缓存损坏：清缓存后由 launchd 自动拉起
+echo "启动缓慢，正在清理编译缓存（launchd 会自动重新拉起）…"
+launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null
+rm -rf .next
+sleep 2
+launchctl bootstrap "gui/$(id -u)" "$PLIST" 2>/dev/null || launchctl load -w "$PLIST" 2>/dev/null
+for _ in $(seq 1 90); do
+  if curl -s -o /dev/null --max-time 2 http://localhost:3210/admin; then
+    open "http://localhost:3210/admin"
+    echo "✓ 后台已就绪（已自动清理缓存）。"
+    exit 0
+  fi
+  sleep 1
+done
+
+echo "多次尝试后仍未就绪，请把本窗口内容截图发给我。日志：.admin-server.log"
+exit 1

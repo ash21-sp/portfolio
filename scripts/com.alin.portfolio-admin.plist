@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.alin.portfolio-admin</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/parkjay/.portfolio-admin-server.sh</string>
+    </array>
+
+    <!-- 登录时自动启动 -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- 进程退出后自动重新拉起（10 秒节流） -->
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+
+    <key>StandardOutPath</key>
+    <string>/Users/parkjay/.portfolio-admin.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/parkjay/.portfolio-admin.log</string>
+</dict>
+</plist>
