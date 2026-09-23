@@ -33,6 +33,19 @@
       "seamlessGallery": true
     },
     {
+      "slug": "youda",
+      "title": "悠悠搭搭",
+      "subtitle": "陪玩社交种草",
+      "category": "移动端",
+      "year": "2026",
+      "role": "界面设计",
+      "description": [],
+      "featured": true,
+      "cover": "/works/20260923-181626-frame-32969.jpg",
+      "showCoverInDetail": false,
+      "showDescriptionInDetail": false
+    },
+    {
       "slug": "maxintel",
       "title": "MaxIntel 极智",
       "subtitle": "GEO 智能营销平台 · UI 改版与新模块",
@@ -46,19 +59,6 @@
         "我负责从 0 到 1 的界面设计与设计系统建设，与前端一起把组件颗粒度对齐到可直接复用的程度。"
       ],
       "featured": true
-    },
-    {
-      "slug": "youda",
-      "title": "悠悠搭搭",
-      "subtitle": "陪玩社交种草",
-      "category": "移动端",
-      "year": "2026",
-      "role": "界面设计",
-      "description": [],
-      "featured": true,
-      "cover": "/works/20260923-181626-frame-32969.jpg",
-      "showCoverInDetail": false,
-      "showDescriptionInDetail": false
     },
     {
       "slug": "honda",
