@@ -48,17 +48,17 @@
       "featured": true
     },
     {
-      "slug": "moyu",
+      "slug": "youda",
       "title": "悠悠搭搭",
-      "subtitle": "沉浸式阅读器界面设计",
+      "subtitle": "陪玩社交种草",
       "category": "移动端",
-      "year": "2025",
+      "year": "2026",
       "role": "界面设计",
-      "description": [
-        "一款专注长文阅读的 App 概念设计。围绕「沉浸」重新排布阅读动线：可调版式、护眼主题，以及不被打扰的目录手势。",
-        "正文排版参照书籍网格设定字距与行高，让长时间阅读仍然舒适。"
-      ],
-      "featured": true
+      "description": [],
+      "featured": true,
+      "cover": "/works/20260923-181626-frame-32969.jpg",
+      "showCoverInDetail": false,
+      "showDescriptionInDetail": false
     },
     {
       "slug": "honda",
