@@ -1,13 +1,14 @@
 {
   "funProjects": [
     {
-      "title": "像素头像生成器",
-      "description": "输入任意字符串，随机生成一张独一无二的像素风头像。",
+      "title": " Auto Frame & Rename",
+      "description": "选中多个图片或图层，一键为它们创建画板并按位置顺序命名，告别逐个加画板、逐个改名的重复劳动",
       "tags": [
-        "SVG",
-        "随机算法"
+        "Figam插件",
+        "批量填充"
       ],
-      "logo": "/fun/double-x.svg"
+      "logo": "/fun/double-x.svg",
+      "url": "https://www.figma.com/community/plugin/1684053203034150316"
     },
     {
       "title": "赛博许愿池",
