@@ -11,11 +11,10 @@
       "url": "https://www.figma.com/community/plugin/1684053203034150316"
     },
     {
-      "title": "赛博许愿池",
-      "description": "把愿望写进粒子动画里，看它慢慢沉底，或者被陌生人捞起来。",
+      "title": "TodayBar",
+      "description": "工作安排提醒及内存检测小工具",
       "tags": [
-        "Canvas",
-        "交互动画"
+        "Mac"
       ],
       "logo": "/fun/wishpool.svg"
     },
