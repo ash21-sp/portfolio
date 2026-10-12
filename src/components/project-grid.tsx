@@ -59,7 +59,9 @@ export function ProjectGrid() {
           className="grid-in mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2"
         >
           {filtered.map((project, i) => {
-            const inner = <ProjectCard project={project} index={i} />;
+            const inner = (
+              <ProjectCard project={project} index={i} showFeaturedBadge />
+            );
 
             return (
             <li key={project.title}>

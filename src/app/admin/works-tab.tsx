@@ -388,11 +388,12 @@ export function WorksTab({
                     checked={!!project.featured}
                     onChange={(e) => patch({ featured: e.target.checked })}
                   />
-                  在首页「精选作品」中展示这件作品
+                  设为精选作品
                 </label>
                 <p className="mt-1 text-xs leading-relaxed text-mute">
-                  已选 {projects.filter((p) => p.featured).length} 件 · 建议选 4
-                  件（首页按两列排列）；一件都没选时默认展示排序最前的 4 件
+                  已选 {projects.filter((p) => p.featured).length} 件 ·
+                  首页「精选作品」只展示精选；作品列表中精选作品带「精选」标识。一件都没选时首页默认展示排序最前的
+                  4 件
                 </p>
               </div>
             </div>

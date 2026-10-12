@@ -35,21 +35,31 @@ export function ProjectCover({
   );
 }
 
-/** 项目卡：封面 + 标题行 */
+/** 项目卡：封面 + 标题行；showFeaturedBadge 时给精选作品名后加「精选」标识 */
 export function ProjectCard({
   project,
   index,
+  showFeaturedBadge = false,
 }: {
   project: Project;
   index: number;
+  showFeaturedBadge?: boolean;
 }) {
   return (
     <>
       <ProjectCover project={project} index={index} />
       <div className="mt-3.5 flex items-baseline justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-[15px] font-medium underline-offset-4 group-hover:underline group-hover:decoration-accent">
-            {project.title}
+          <h3 className="flex items-center gap-1.5 text-[15px] font-medium underline-offset-4 group-hover:underline group-hover:decoration-accent">
+            <span className="truncate">{project.title}</span>
+            {showFeaturedBadge && project.featured && (
+              <span
+                className="shrink-0 rounded-full border border-accent/40 bg-accent-soft px-1.5 py-px text-[10px] leading-4 text-accent"
+                title="精选作品"
+              >
+                精选
+              </span>
+            )}
           </h3>
           <p className="mt-0.5 truncate text-[13px] text-mute">
             {project.subtitle}
