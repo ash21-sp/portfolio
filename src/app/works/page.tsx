@@ -18,11 +18,13 @@ export default function WorksPage() {
             作品<span className="text-accent">.</span>
           </h1>
         </Reveal>
-        <Reveal delay={150}>
-          <p className="mt-4 max-w-[50ch] text-[15px] leading-[1.85] text-mute">
-            这里收录了我近期的一些设计项目——界面、品牌，和一些不严肃的实验。
-          </p>
-        </Reveal>
+        {site.worksIntro && (
+          <Reveal delay={150}>
+            <p className="mt-4 max-w-[50ch] text-[15px] leading-[1.85] text-mute">
+              {site.worksIntro}
+            </p>
+          </Reveal>
+        )}
       </section>
       <ProjectGrid />
     </PageShell>

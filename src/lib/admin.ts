@@ -111,6 +111,9 @@ export function validateProfile(p: ProfileData): string[] {
 export function validateWorks(w: WorksData): string[] {
   if (!w) return ["作品数据缺失"];
   const errors: string[] = [];
+  if (w.intro !== undefined && !isStr(w.intro)) {
+    errors.push("作品页开场文案需要是文本");
+  }
   if (!isStrArray(w.categories) || w.categories.length === 0) {
     return ["至少需要保留一个作品分类"];
   }

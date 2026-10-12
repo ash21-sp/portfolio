@@ -77,6 +77,11 @@ export async function PUT(req: NextRequest) {
       socials: body.socials ?? current.socials,
       tools: body.tools ?? current.tools,
     };
+    // 旧标签页的 works 数据可能没有新增字段，从磁盘兜底；空字符串视为有意清空，保留
+    if (typeof next.works.intro !== "string") {
+      next.works.intro =
+        typeof current.works.intro === "string" ? current.works.intro : "";
+    }
 
     const errors = [
       ...validateProfile(next.profile),

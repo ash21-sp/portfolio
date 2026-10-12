@@ -105,6 +105,8 @@ export interface ProfileData {
 
 /** content/works.json 的结构 */
 export interface WorksData {
+  /** 作品页开场文案；为空时页面不显示这句话 */
+  intro: string;
   /** 作品分类；第一个分类视为「全部」入口 */
   categories: string[];
   projects: Project[];
@@ -143,6 +145,7 @@ export const site = {
   funProjects: fun.funProjects,
   socials: socials.socials,
   tools: tools.tools,
+  worksIntro: works.intro ?? "",
 };
 
 export type Site = typeof site;

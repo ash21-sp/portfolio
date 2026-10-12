@@ -153,7 +153,22 @@ export function WorksTab({
   const usedCategories = new Set(projects.map((p) => p.category));
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[250px_1fr]">
+    <div className="space-y-4">
+      <Card title="页面文案">
+        <Field
+          label="作品页开场白"
+          hint="显示在作品列表标题下的一句话；清空后作品页不显示这句"
+        >
+          <TextArea
+            rows={2}
+            value={works.intro ?? ""}
+            placeholder="这里收录了我近期的一些设计项目…"
+            onChange={(e) => onChange({ ...works, intro: e.target.value })}
+          />
+        </Field>
+      </Card>
+
+      <div className="grid gap-6 lg:grid-cols-[250px_1fr]">
       {/* 左栏：作品列表 + 分类 */}
       <div className="space-y-4">
         <Card title={`作品 · ${projects.length}`}>
@@ -532,6 +547,7 @@ export function WorksTab({
           </p>
         </Card>
       )}
+      </div>
     </div>
   );
 }
