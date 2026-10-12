@@ -67,16 +67,16 @@
       "category": "企业官网",
       "year": "2025",
       "role": "UI设计师",
-      "description": [
-        "一组中文字体海报实验：每张海报只使用一个词语，通过字重、网格与留白的变化，探索汉字排版的边界。"
-      ],
+      "description": [],
       "cover": "/works/20260922-211711-357.png",
       "featured": true,
       "gallery": [
         "/works/20261012-165142-frame-427319552.png",
         "/works/20261012-164731-frame-427319557.png",
         "/works/20261012-164728-frame-427319556.png"
-      ]
+      ],
+      "seamlessGallery": true,
+      "showDescriptionInDetail": false
     },
     {
       "slug": "1905",
