@@ -19,12 +19,12 @@
       "logo": "/fun/wishpool.svg"
     },
     {
-      "title": "AI 灵魂画手",
-      "description": "你说一句画面，AI 替你画成一幅儿童简笔画。",
+      "title": "翻页助手 Page Jumper",
+      "description": "输入页码即可在仅有上一页/下一页的网站上跳转：优先URL直达，失败自动翻页，带进度与 Esc 取消。\n",
       "tags": [
-        "LLM",
-        "Next.js"
-      ]
+        "浏览器插件"
+      ],
+      "logo": "/fun/20261012-163031-frame.svg"
     }
   ]
 }
