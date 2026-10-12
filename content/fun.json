@@ -2,7 +2,7 @@
   "funProjects": [
     {
       "title": " Auto Frame & Rename",
-      "description": "选中多个图片或图层，一键为它们创建画板并按位置顺序命名，告别逐个加画板、逐个改名的重复劳动",
+      "description": "Figma中选中多个图片或图层，一键为它们创建画板并按位置顺序命名，告别逐个加画板、逐个改名的重复劳动",
       "tags": [
         "Figam插件",
         "批量填充"
